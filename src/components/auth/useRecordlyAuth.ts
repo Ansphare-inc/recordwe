@@ -7,7 +7,7 @@ import {
 	recordlyAuthConfigured,
 } from "@/lib/auth/recordlyAuth";
 
-export function useRecordlyAuth() {
+export function useRecordWeAuth() {
 	const demo = useSyncExternalStore(subscribeDemoSession, hasDemoSession, () => false);
 	const [user, setUser] = useState<User | null>(null);
 	const [accessToken, setAccessToken] = useState<string>();

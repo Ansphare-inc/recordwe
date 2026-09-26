@@ -19,7 +19,7 @@ test("banner login animates email expansion, rejects incorrect credentials, and 
 		login.getByRole("button", { name: "Continue with Microsoft", exact: true }),
 	).toBeVisible();
 	await expect(login.getByLabel("Password", { exact: true })).toHaveCount(0);
-	await expect(login.getByText("Recordly", { exact: true })).toBeVisible();
+	await expect(login.getByText("RecordWe", { exact: true })).toBeVisible();
 	await expect(login.getByText("worth sharing.", { exact: false })).toHaveCount(0);
 	for (const provider of ["Google", "Microsoft"]) {
 		await expect
@@ -90,7 +90,7 @@ test("login banner and email expansion work with reduced motion", async ({ page 
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await installDesktopBridge(page);
 	await page.goto("/?windowType=editor");
-	await page.getByRole("button", { name: "Recordly account", exact: true }).click();
+	await page.getByRole("button", { name: "RecordWe account", exact: true }).click();
 	const login = page.getByRole("dialog", {
 		name: "Beautiful, shareable screen recordings",
 		exact: true,

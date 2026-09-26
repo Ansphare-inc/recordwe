@@ -56,6 +56,18 @@ function electronMainCjsGuardPlugin(): Plugin {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+	server: {
+		watch: {
+			usePolling: false,
+			interval: 1000,
+		},
+		hmr: {
+			overlay: true,
+		},
+		fs: {
+			strict: false,
+		},
+	},
 	plugins: [
 		react(),
 		...(mode === "ui" || process.env.RECORDLY_RENDERER_ONLY === "1"
@@ -119,6 +131,14 @@ export default defineConfig(({ mode }) => ({
 			"react-icons/md",
 			"react-icons/rx",
 		],
+		include: [
+			"react",
+			"react-dom",
+			"@heroui/react",
+			"motion",
+			"pixi.js",
+		],
+		force: false,
 	},
 	build: {
 		target: "esnext",
@@ -132,12 +152,33 @@ export default defineConfig(({ mode }) => ({
 		},
 		rollupOptions: {
 			output: {
-				manualChunks: {
-					"react-vendor": ["react", "react-dom"],
-					"video-processing": ["mediabunny", "mp4box", "@fix-webm-duration/fix"],
+				manualChunks: (id) => {
+					if (id.includes("node_modules")) {
+						if (id.includes("react") || id.includes("react-dom")) {
+							return "react-vendor";
+						}
+						if (id.includes("mediabunny") || id.includes("mp4box") || id.includes("@fix-webm-duration")) {
+							return "video-processing";
+						}
+						if (id.includes("pixi") || id.includes("pixi-filters")) {
+							return "graphics";
+						}
+						if (id.includes("@heroui")) {
+							return "ui-components";
+						}
+						if (id.includes("motion")) {
+							return "animations";
+						}
+						if (id.includes("react-icons")) {
+							return "icons";
+						}
+						return "vendor";
+					}
 				},
 			},
 		},
 		chunkSizeWarningLimit: 1000,
+		sourcemap: false,
+		cssCodeSplit: true,
 	},
 }));

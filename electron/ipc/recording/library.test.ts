@@ -81,7 +81,7 @@ it("lists recordings, moves recordings and their companions to Trash with revers
 	await expect(fs.access(first)).rejects.toThrow();
 	await expect(fs.access(path.join(state.root, "recording-new.mic.wav"))).rejects.toThrow();
 	expect(
-		(await fs.readdir(state.root)).filter((name) => name.startsWith(".recordly-trash-")),
+		(await fs.readdir(state.root)).filter((name) => name.startsWith(".recordwe-trash-")),
 	).toHaveLength(1);
 	await setRecordingsRemoved([first, second], false);
 	expect(await listRecordings()).toHaveLength(2);
@@ -143,7 +143,7 @@ it("imports different-sized recordings with playable video, separate audio, stab
 		webcam,
 	]);
 	await fs.writeFile(
-		added.replace(".mp4", ".recordly-session.json"),
+		added.replace(".mp4", ".recordwe-session.json"),
 		JSON.stringify({ version: 2, webcamFileName: path.basename(webcam), timeOffsetMs: 200 }),
 	);
 	await fs.writeFile(
@@ -246,7 +246,7 @@ it("imports different-sized recordings with playable video, separate audio, stab
 	await expect(fs.access(result.path.replace(/\.mp4$/, ".mic.wav"))).rejects.toThrow();
 	await expect(fs.access(result.path.replace(/\.mp4$/, "-webcam.mp4"))).rejects.toThrow();
 	await expect(
-		fs.access(result.path.replace(/\.mp4$/, ".recordly-session.json")),
+		fs.access(result.path.replace(/\.mp4$/, ".recordwe-session.json")),
 	).rejects.toThrow();
 	await expect(fs.access(`${result.path}.webcam-ranges.json`)).rejects.toThrow();
 	await expect(fs.access(`${result.path}.cursor.json`)).rejects.toThrow();
@@ -303,12 +303,12 @@ it("cancels an active import and removes partial outputs without changing origin
 	const importing = importRecording(base, added, undefined, controller.signal);
 	const rejected = expect(importing).rejects.toMatchObject({ name: "AbortError" });
 	await vi.waitFor(async () => {
-		const files = await fs.readdir(path.join(state.root, ".recordly-media"));
+		const files = await fs.readdir(path.join(state.root, ".recordwe-media"));
 		expect(files.some((name) => name.startsWith("import-"))).toBe(true);
 	});
 	controller.abort();
 	await rejected;
-	expect(await fs.readdir(path.join(state.root, ".recordly-media"))).toEqual([]);
+	expect(await fs.readdir(path.join(state.root, ".recordwe-media"))).toEqual([]);
 	expect(await fs.readFile(base)).toEqual(original);
 	expect(await fs.readFile(added)).toEqual(original);
 });

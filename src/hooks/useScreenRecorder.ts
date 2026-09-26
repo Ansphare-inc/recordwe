@@ -557,8 +557,8 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 			await window.electronAPI.openScreenRecordingPreferences();
 			alert(
 				options.startup
-					? "Recordly needs Screen Recording permission before you start. System Settings has been opened. After enabling it, quit and reopen Recordly."
-					: "Screen Recording permission is still missing. System Settings has been opened again. Enable it, then quit and reopen Recordly before recording.",
+					? "RecordWe needs Screen Recording permission before you start. System Settings has been opened. After enabling it, quit and reopen RecordWe."
+					: "Screen Recording permission is still missing. System Settings has been opened again. Enable it, then quit and reopen RecordWe before recording.",
 			);
 			return false;
 		}
@@ -580,8 +580,8 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		await window.electronAPI.openAccessibilityPreferences();
 		alert(
 			options.startup
-				? "Recordly also needs Accessibility permission for cursor tracking. System Settings has been opened. After enabling it, quit and reopen Recordly."
-				: "Accessibility permission is still missing. System Settings has been opened again. Enable it, then quit and reopen Recordly before recording.",
+				? "RecordWe also needs Accessibility permission for cursor tracking. System Settings has been opened. After enabling it, quit and reopen RecordWe."
+				: "Accessibility permission is still missing. System Settings has been opened again. Enable it, then quit and reopen RecordWe before recording.",
 		);
 
 		return false;
@@ -1126,9 +1126,16 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 	}, []);
 
 	const prepareRecordingStart = useCallback(async () => {
+		const perfStart = performance.now();
+		console.log("[PERF:RENDERER] prepareRecordingStart: STARTED");
+		
 		const platform = await window.electronAPI.getPlatform();
+		console.log(`[PERF:RENDERER] getPlatform: ${(performance.now() - perfStart).toFixed(2)}ms`);
+		
 		hideEditorOverlayCursorByDefault.current = false;
 		const existingSource = await window.electronAPI.getSelectedSource();
+		console.log(`[PERF:RENDERER] getSelectedSource: ${(performance.now() - perfStart).toFixed(2)}ms`);
+		
 		const selectedSource =
 			existingSource ?? (platform === "linux" ? LINUX_PORTAL_SOURCE : null);
 		if (!selectedSource) {
@@ -1144,14 +1151,20 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 			}
 		}
 
+		const permissionsStart = performance.now();
 		const permissionsReady = await preparePermissions();
+		console.log(`[PERF:RENDERER] preparePermissions: ${(performance.now() - permissionsStart).toFixed(2)}ms`);
+		
 		if (!permissionsReady) {
 			return null;
 		}
 
 		recordingSessionTimestamp.current = Date.now();
 		resetRecordingClock(recordingSessionTimestamp.current);
+		
+		const webcamStart = performance.now();
 		await prepareWebcamRecorder();
+		console.log(`[PERF:RENDERER] prepareWebcamRecorder: ${(performance.now() - webcamStart).toFixed(2)}ms`);
 
 		const useNativeMacScreenCapture =
 			platform === "darwin" &&
@@ -1166,8 +1179,11 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 			typeof window.electronAPI.isNativeWindowsCaptureAvailable === "function"
 		) {
 			try {
+				const nativeCheckStart = performance.now();
 				const nativeWindowsResult =
 					await window.electronAPI.isNativeWindowsCaptureAvailable();
+				console.log(`[PERF:RENDERER] isNativeWindowsCaptureAvailable: ${(performance.now() - nativeCheckStart).toFixed(2)}ms`);
+				
 				useNativeWindowsCapture = nativeWindowsResult.available;
 				if (!useNativeWindowsCapture && !hasShownNativeWindowsFallbackToast.current) {
 					void logNativeCaptureDiagnostics("is-native-windows-capture-available");
@@ -1190,7 +1206,10 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		let micLabel: string | undefined;
 		if ((useNativeMacScreenCapture || useNativeWindowsCapture) && microphoneEnabled) {
 			try {
+				const deviceEnumStart = performance.now();
 				const devices = await navigator.mediaDevices.enumerateDevices();
+				console.log(`[PERF:RENDERER] enumerateDevices: ${(performance.now() - deviceEnumStart).toFixed(2)}ms`);
+				
 				const mic = devices.find(
 					(d) => d.deviceId === microphoneDeviceId && d.kind === "audioinput",
 				);
@@ -1200,6 +1219,8 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 			}
 		}
 
+		console.log(`[PERF:RENDERER] prepareRecordingStart: COMPLETED in ${(performance.now() - perfStart).toFixed(2)}ms`);
+		
 		return {
 			platform,
 			selectedSource,
@@ -1662,6 +1683,9 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		if (startInFlight.current) {
 			return;
 		}
+		const perfStart = performance.now();
+		console.log("[PERF:RENDERER] startRecording: STARTED");
+		
 		const startGeneration = recordingStartGeneration.current + 1;
 		recordingStartGeneration.current = startGeneration;
 		const startWasCancelled = () => recordingStartGeneration.current !== startGeneration;
@@ -1681,7 +1705,10 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		setStarting(true);
 
 		try {
+			const prepareStart = performance.now();
 			const preparedStart = await prepareRecordingStart();
+			console.log(`[PERF:RENDERER] prepareRecordingStart call: ${(performance.now() - prepareStart).toFixed(2)}ms`);
+			
 			if (!preparedStart || startWasCancelled()) {
 				cleanupCapturedMedia();
 				await stopWebcamRecorder();
@@ -1692,10 +1719,14 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 				preparedStart;
 			const useNativeCapture = useNativeMacScreenCapture || useNativeWindowsCapture;
 			const shouldWarmStartNativeCapture = useNativeCapture && countdownDelay > 0;
+			
 			if (countdownDelay > 0 && !shouldWarmStartNativeCapture) {
 				setCountdownActive(true);
 				try {
+					const countdownStart = performance.now();
 					const result = await window.electronAPI.startCountdown(countdownDelay);
+					console.log(`[PERF:RENDERER] startCountdown: ${(performance.now() - countdownStart).toFixed(2)}ms`);
+					
 					if (!result.success || result.cancelled || startWasCancelled()) {
 						cleanupCapturedMedia();
 						await stopWebcamRecorder();
@@ -1711,6 +1742,7 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 			let nativeWindowsCaptureStartFailed = false;
 
 			if (useNativeCapture) {
+				const nativeStart = performance.now();
 				const nativeResult = await window.electronAPI.startNativeScreenRecording(
 					selectedSource,
 					{
@@ -1720,6 +1752,8 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 						microphoneLabel: micLabel,
 					},
 				);
+				console.log(`[PERF:RENDERER] startNativeScreenRecording: ${(performance.now() - nativeStart).toFixed(2)}ms`);
+				
 				if (nativeResult.success && startWasCancelled()) {
 					nativeScreenRecording.current = true;
 					nativeWindowsRecording.current = useNativeWindowsCapture;
@@ -1892,6 +1926,8 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 					}
 
 					setRecording(true);
+					console.log(`[PERF:RENDERER] startRecording: COMPLETED in ${(performance.now() - perfStart).toFixed(2)}ms`);
+					
 					try {
 						await window.electronAPI?.setRecordingState(true);
 					} catch (stateError) {
@@ -2281,6 +2317,7 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 			setHudSourceSelectionActive(false);
 			startInFlight.current = false;
 			setStarting(false);
+			console.log(`[PERF:RENDERER] startRecording: TOTAL ${(performance.now() - perfStart).toFixed(2)}ms`);
 		}
 	};
 

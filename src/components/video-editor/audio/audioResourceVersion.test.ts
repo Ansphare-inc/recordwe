@@ -9,7 +9,7 @@ import {
 
 describe("getAudioResourceVersionKey", () => {
 	it("changes identity when a finalized companion replaces a partial file at the same path", () => {
-		const audioPath = "C:\\Recordly\\recording.mic.wav";
+		const audioPath = "C:\\RecordWe\\recording.mic.wav";
 
 		expect(getAudioResourceVersionKey(audioPath, 0)).not.toBe(
 			getAudioResourceVersionKey(audioPath, 1),
@@ -17,7 +17,7 @@ describe("getAudioResourceVersionKey", () => {
 	});
 
 	it("is stable for rerenders within the same finalization version", () => {
-		const audioPath = "C:\\Recordly\\recording.mic.wav";
+		const audioPath = "C:\\RecordWe\\recording.mic.wav";
 
 		expect(getAudioResourceVersionKey(audioPath, 3)).toBe(
 			getAudioResourceVersionKey(audioPath, 3),
@@ -25,7 +25,7 @@ describe("getAudioResourceVersionKey", () => {
 	});
 
 	it("keeps an in-flight load valid across rerenders and rejects an older version", () => {
-		const audioPath = "C:\\Recordly\\recording.mic.wav";
+		const audioPath = "C:\\RecordWe\\recording.mic.wav";
 		const versionOne = getAudioResourceVersionKey(audioPath, 1);
 		const versionTwo = getAudioResourceVersionKey(audioPath, 2);
 		const resources = new Map([[audioPath, versionOne]]);
@@ -36,10 +36,10 @@ describe("getAudioResourceVersionKey", () => {
 	});
 
 	it("cache-busts only the trusted loopback media URL after finalization", () => {
-		const localUrl = "http://127.0.0.1:43123/video?path=C%3A%5CRecordly%5Crecording.mic.wav";
+		const localUrl = "http://127.0.0.1:43123/video?path=C%3A%5CRecordWe%5Crecording.mic.wav";
 		const versionedUrl = new URL(getVersionedAudioResourceUrl(localUrl, 2));
 
-		expect(versionedUrl.searchParams.get("path")).toBe("C:\\Recordly\\recording.mic.wav");
+		expect(versionedUrl.searchParams.get("path")).toBe("C:\\RecordWe\\recording.mic.wav");
 		expect(versionedUrl.searchParams.get("recordlyAudioVersion")).toBe("2");
 		expect(getVersionedAudioResourceUrl("https://cdn.example/audio.wav?sig=abc", 2)).toBe(
 			"https://cdn.example/audio.wav?sig=abc",
@@ -47,7 +47,7 @@ describe("getAudioResourceVersionKey", () => {
 	});
 
 	it("uses one cache scope for every version of a loopback resource", () => {
-		const baseUrl = "http://127.0.0.1:43123/video?path=C%3A%5CRecordly%5Crecording.mic.wav";
+		const baseUrl = "http://127.0.0.1:43123/video?path=C%3A%5CRecordWe%5Crecording.mic.wav";
 		const versionedUrl = `${baseUrl}&recordlyAudioVersion=4`;
 
 		expect(getAudioResourceCacheScope(versionedUrl)).toBe(baseUrl);

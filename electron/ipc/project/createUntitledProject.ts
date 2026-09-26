@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 /** Publish a complete new project without overwriting a concurrent or existing save. */
 export async function createUntitledProject(directory: string, contents: string) {
 	await fs.mkdir(directory, { recursive: true });
-	const temporary = path.join(directory, `.recordly-new-${randomUUID()}.tmp`);
+	const temporary = path.join(directory, `.recordwe-new-${randomUUID()}.tmp`);
 	try {
 		const file = await fs.open(temporary, "wx");
 		try {
@@ -16,7 +16,7 @@ export async function createUntitledProject(directory: string, contents: string)
 		for (let suffix = 0; ; suffix++) {
 			const target = path.join(
 				directory,
-				`Untitled Project${suffix ? ` ${suffix}` : ""}.recordly`,
+				`Untitled Project${suffix ? ` ${suffix}` : ""}.recordwe`,
 			);
 			try {
 				await fs.link(temporary, target);

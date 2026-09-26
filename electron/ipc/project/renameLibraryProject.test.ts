@@ -6,8 +6,8 @@ import { renameLibraryProject } from "./renameLibraryProject";
 
 it("renames a library project with its preview without overwriting another project", async () => {
 	const dir = await fs.mkdtemp(path.join(os.tmpdir(), "recordly-rename-"));
-	const original = path.join(dir, "Original.recordly"),
-		target = path.join(dir, "Renamed.recordly");
+	const original = path.join(dir, "Original.recordwe"),
+		target = path.join(dir, "Renamed.recordwe");
 	const sidecars = (file: string) => [`${file}.png`];
 	try {
 		await fs.writeFile(original, "project");

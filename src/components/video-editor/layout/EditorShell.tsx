@@ -1,7 +1,7 @@
 import { AccountProfileContext } from "@/components/ui/account-avatar";
 import { DashboardSettingsContext } from "../dashboard/DashboardSettings";
-import { RecordlySignInDialog, type SignInReason } from "@/components/auth/RecordlySignInDialog";
-import { useRecordlyAuth } from "@/components/auth/useRecordlyAuth";
+import { RecordWeSignInDialog, type SignInReason } from "@/components/auth/RecordWeSignInDialog";
+import { useRecordWeAuth } from "@/components/auth/useRecordWeAuth";
 import { useVideoSourceRecovery } from "../hooks/useVideoSourceRecovery";
 import { useRecordingLibrary } from "../library/useRecordingLibrary";
 import { RecordingLibraryPanel } from "../library/RecordingLibraryPanel";
@@ -58,7 +58,7 @@ export function EditorShell(props: Props) {
 	const [signInOpen, setSignInOpen] = useState(false);
 	const [signInReason, setSignInReason] = useState<SignInReason>("account");
 	const [shareRequestNonce, setShareRequestNonce] = useState(0);
-	const auth = useRecordlyAuth();
+	const auth = useRecordWeAuth();
 	const requestSignIn = (reason: SignInReason) => {
 		if (reason === "share" && auth.user) {
 			setShareRequestNonce((value) => value + 1);
@@ -192,7 +192,7 @@ export function EditorShell(props: Props) {
 		return (
 			<>
 				<EditorLoadingSkeleton />
-				<RecordlySignInDialog
+				<RecordWeSignInDialog
 					open={signInOpen}
 					onOpenChange={setSignInOpen}
 					reason={signInReason}
@@ -222,7 +222,7 @@ export function EditorShell(props: Props) {
 						Open Projects
 					</Button>
 				</div>
-				<RecordlySignInDialog
+				<RecordWeSignInDialog
 					open={signInOpen}
 					onOpenChange={setSignInOpen}
 					reason={signInReason}
@@ -424,7 +424,7 @@ export function EditorShell(props: Props) {
 					</div>
 				</div>
 			)}
-			<RecordlySignInDialog
+			<RecordWeSignInDialog
 				open={signInOpen}
 				onOpenChange={setSignInOpen}
 				reason={signInReason}

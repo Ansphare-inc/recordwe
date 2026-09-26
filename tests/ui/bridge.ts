@@ -54,7 +54,7 @@ export async function installDesktopBridge(page: Page, videoFixture = "preview.m
 					);
 					return {
 						success: true,
-						path: "/projects/Untitled Project.recordly",
+						path: "/projects/Untitled Project.recordwe",
 						projectId: "test-project",
 					};
 				},
@@ -141,7 +141,7 @@ export async function installDesktopBridge(page: Page, videoFixture = "preview.m
 				},
 				getCurrentUpdateToastPayload: async () => ({
 					version: "1.4.1",
-					detail: "A new version of Recordly is available.",
+					detail: "A new version of RecordWe is available.",
 					phase: "available",
 					delayMs: 60000,
 					isPreview: true,

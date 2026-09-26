@@ -627,16 +627,16 @@ describe("resolveExperimentalNvidiaCudaExportScriptPath", () => {
 				return;
 			}
 
-			const resourcesPath = "C:\\Recordly\\resources";
+			const resourcesPath = "C:\\RecordWe\\resources";
 			const unpackedScriptPath =
-				"C:\\Recordly\\resources\\app.asar.unpacked\\electron\\native\\nvidia-cuda-compositor\\run-mp4-pipeline.mjs";
+				"C:\\RecordWe\\resources\\app.asar.unpacked\\electron\\native\\nvidia-cuda-compositor\\run-mp4-pipeline.mjs";
 			const asarScriptPath =
-				"C:\\Recordly\\resources\\app.asar\\electron\\native\\nvidia-cuda-compositor\\run-mp4-pipeline.mjs";
+				"C:\\RecordWe\\resources\\app.asar\\electron\\native\\nvidia-cuda-compositor\\run-mp4-pipeline.mjs";
 			Object.defineProperty(process, "resourcesPath", {
 				configurable: true,
 				value: resourcesPath,
 			});
-			electronAppMock.getAppPath.mockReturnValue("C:\\Recordly\\resources\\app.asar");
+			electronAppMock.getAppPath.mockReturnValue("C:\\RecordWe\\resources\\app.asar");
 			fsMocks.access.mockImplementation(async (candidate: string) => {
 				if (candidate === unpackedScriptPath || candidate === asarScriptPath) {
 					return;

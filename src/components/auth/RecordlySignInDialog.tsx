@@ -20,7 +20,7 @@ import {
 	sendPasswordReset,
 	signInWithEmail,
 	signInWithSocial,
-	signOutRecordly,
+	signOutRecordWe,
 } from "@/lib/auth/recordlyAuth";
 
 const MotionDialog = motion.create(Modal.Dialog);
@@ -54,7 +54,7 @@ function friendlyAuthError(
 	return message;
 }
 
-export function RecordlySignInDialog({
+export function RecordWeSignInDialog({
 	variant = "compact",
 	open,
 	onOpenChange,
@@ -180,7 +180,7 @@ export function RecordlySignInDialog({
 									<Modal.Header className="items-center gap-4 text-center">
 										<div
 											className="flex items-center gap-3"
-											aria-label="Recordly"
+											aria-label="RecordWe"
 										>
 											<img
 												src={`${import.meta.env.BASE_URL}app-icons/recordly-128.png`}
@@ -188,7 +188,7 @@ export function RecordlySignInDialog({
 												className="size-12 rounded-xl"
 											/>
 											<span className="text-3xl font-semibold tracking-tight">
-												Recordly
+												RecordWe
 											</span>
 										</div>
 										<Modal.Heading className="whitespace-nowrap text-[clamp(12px,5cqw,22px)] font-semibold leading-tight tracking-tight">
@@ -208,7 +208,7 @@ export function RecordlySignInDialog({
 										variant="secondary"
 										className="w-full"
 										isDisabled={disabled}
-										onPress={() => void run("signout", signOutRecordly)}
+										onPress={() => void run("signout", signOutRecordWe)}
 									>
 										<SignOut className="size-4" />
 										{busy === "signout"

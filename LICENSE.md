@@ -11,9 +11,9 @@ Version 3, 19 November 2007
 - You CANNOT use the "Recordly" name or branding for your own project.
 - If you use Recordly's code or create code derived from Recordly you must attribute Recordly in the user-facing UI and the repo.
 
-Copyright (C) 2026 webadderall
+Copyright (C) 2026 Ansphare-inc
 
-Recordly is an independent application that started as a fork of the OpenScreen project, authored by Siddharth Vaddem (2025).
+RecordWe is a fork of Recordly, which was created by webadderall. Recordly originally started as a fork of the OpenScreen project, authored by Siddharth Vaddem (2025).
 
 ---
 PART 1: THE AGPLv3 LICENSE 

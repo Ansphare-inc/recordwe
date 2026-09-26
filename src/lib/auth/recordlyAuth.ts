@@ -23,7 +23,7 @@ export const recordlyAuth = recordlyAuthConfigured
 function requireAuth() {
 	if (!recordlyAuth) {
 		throw new Error(
-			"Recordly Auth is not configured. Add the Supabase URL and publishable key.",
+			"RecordWe Auth is not configured. Add the Supabase URL and publishable key.",
 		);
 	}
 	return recordlyAuth;
@@ -91,7 +91,7 @@ async function exchangeAuthCallback(url: string): Promise<void> {
 	if (error) throw error;
 }
 
-export async function signOutRecordly(): Promise<void> {
+export async function signOutRecordWe(): Promise<void> {
 	if (hasDemoSession()) {
 		setDemoSession(false);
 		return;

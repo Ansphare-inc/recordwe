@@ -11,7 +11,7 @@ describe("writeProjectFileAtomically", () => {
 
 	beforeEach(async () => {
 		tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "recordly-atomic-project-"));
-		projectPath = path.join(tempDir, "demo.recordly");
+		projectPath = path.join(tempDir, "demo.recordwe");
 	});
 
 	afterEach(async () => {

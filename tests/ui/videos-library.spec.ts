@@ -200,7 +200,7 @@ test("dashboard project list scrolls vertically with long names", async ({ page 
 			success: true,
 			projects: [],
 			entries: Array.from({ length: 30 }, (_, i) => ({
-				path: `/projects/${i}.recordly`,
+				path: `/projects/${i}.recordwe`,
 				name: `An extremely long project name that should never force sideways scrolling ${i}`,
 				updatedAt: Date.now(),
 				thumbnailPath: null,

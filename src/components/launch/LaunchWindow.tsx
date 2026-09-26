@@ -13,7 +13,7 @@ import {
 	XIcon,
 } from "@/components/ui/icons";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { Separator } from "@/components/ui/separator";
 import { useScopedT } from "../../contexts/I18nContext";
 import { useMicrophoneDevices } from "../../hooks/useMicrophoneDevices";
@@ -30,15 +30,16 @@ import { useRecordingTimer } from "./hooks/useRecordingTimer";
 import { useWebcamPreviewOverlay } from "./hooks/useWebcamPreviewOverlay";
 import styles from "./LaunchWindow.module.css";
 import { MarqueeText } from "./MarqueeText";
-import { CountdownPopover } from "./popovers/CountdownPopover";
 import {
 	LaunchPopoverCoordinatorProvider,
 	useLaunchPopoverCoordinator,
 } from "./popovers/LaunchPopoverCoordinator";
-import { MicPopover } from "./popovers/MicPopover";
-import { SourcePopover } from "./popovers/SourcePopover";
-import { WebcamPopover } from "./popovers/WebcamPopover";
 import { RecordingControls } from "./RecordingControls";
+
+const CountdownPopover = lazy(() => import("./popovers/CountdownPopover"));
+const MicPopover = lazy(() => import("./popovers/MicPopover"));
+const SourcePopover = lazy(() => import("./popovers/SourcePopover"));
+const WebcamPopover = lazy(() => import("./popovers/WebcamPopover"));
 
 export function LaunchWindow() {
 	return (
@@ -221,51 +222,54 @@ function LaunchWindowContent() {
 		<>
 			{platform !== "linux" && (
 				<>
-					<SourcePopover
-						selectedSource={selectedSource}
-						onSourceSelect={handleSourceSelect}
-						onOpen={beginInteractiveHudAction}
-						trigger={
-							<Button
-								variant="ghost"
-								size="lg"
-								className={` ${styles.electronNoDrag} group gap-2 px-3 min-w-0 max-w-[180px] shrink-0  ${openId === "sources" ? "border-[var(--launch-border-strong)] bg-[var(--launch-hover)]" : ""} `}
-								title={selectedSource}
-							>
-								<MonitorIcon
-									weight={openId === "sources" ? "fill" : "regular"}
-									size={18}
-									className="size-5 shrink-0"
-								/>
-								<div className="flex-1 min-w-0 overflow-hidden">
-									<MarqueeText text={selectedSource} />
-								</div>
-								<CaretUpIcon
-									size={10}
-									className={`text-[#6b6b78] ml-0.5 shrink-0 transition-transform duration-200 ${
-										openId === "sources" ? "" : "rotate-180"
-									}`}
-								/>
-							</Button>
-						}
-					/>
+					<Suspense fallback={null}>
+						<SourcePopover
+							selectedSource={selectedSource}
+							onSourceSelect={handleSourceSelect}
+							onOpen={beginInteractiveHudAction}
+							trigger={
+								<Button
+									variant="ghost"
+									size="lg"
+									className={` ${styles.electronNoDrag} group gap-2 px-3 min-w-0 max-w-[180px] shrink-0  ${openId === "sources" ? "border-[var(--launch-border-strong)] bg-[var(--launch-hover)]" : ""} `}
+									title={selectedSource}
+								>
+									<MonitorIcon
+										weight={openId === "sources" ? "fill" : "regular"}
+										size={18}
+										className="size-5 shrink-0"
+									/>
+									<div className="flex-1 min-w-0 overflow-hidden">
+										<MarqueeText text={selectedSource} />
+									</div>
+									<CaretUpIcon
+										size={10}
+										className={`text-[#6b6b78] ml-0.5 shrink-0 transition-transform duration-200 ${
+											openId === "sources" ? "" : "rotate-180"
+										}`}
+									/>
+								</Button>
+							}
+						/>
+					</Suspense>
 
 					<Separator orientation="vertical" className="mx-[5px] h-6 self-center" />
 				</>
 			)}
 
-			<MicPopover
-				disabled={recording}
-				systemAudioEnabled={systemAudioEnabled}
-				onToggleSystemAudio={() => setSystemAudioEnabled(!systemAudioEnabled)}
-				microphoneEnabled={microphoneEnabled}
-				onDisableMicrophone={() => setMicrophoneEnabled(false)}
-				devices={devices}
-				microphoneDeviceId={microphoneDeviceId}
-				selectedDeviceId={selectedDeviceId}
-				onSelectDevice={(deviceId) => {
-					setMicrophoneEnabled(true);
-					setSelectedDeviceId(deviceId);
+			<Suspense fallback={null}>
+				<MicPopover
+					disabled={recording}
+					systemAudioEnabled={systemAudioEnabled}
+					onToggleSystemAudio={() => setSystemAudioEnabled(!systemAudioEnabled)}
+					microphoneEnabled={microphoneEnabled}
+					onDisableMicrophone={() => setMicrophoneEnabled(false)}
+					devices={devices}
+					microphoneDeviceId={microphoneDeviceId}
+					selectedDeviceId={selectedDeviceId}
+					onSelectDevice={(deviceId) => {
+						setMicrophoneEnabled(true);
+						setSelectedDeviceId(deviceId);
 					setMicrophoneDeviceId(deviceId === "default" ? undefined : deviceId);
 				}}
 				trigger={
@@ -292,69 +296,74 @@ function LaunchWindowContent() {
 					</Button>
 				}
 			/>
+			</Suspense>
 
-			<WebcamPopover
-				disabled={recording}
-				webcamEnabled={webcamEnabled}
-				onDisableWebcam={() => setWebcamEnabled(false)}
-				canToggleFloatingPreview={canToggleFloatingWebcamPreview(
-					hudOverlayMousePassthroughSupported,
-				)}
-				showFloatingWebcamPreview={showFloatingWebcamPreview}
-				onToggleFloatingPreview={() => setShowFloatingWebcamPreview((current) => !current)}
-				showWebcamControls={showWebcamControls}
-				setWebcamPreviewNode={setWebcamPreviewNode}
-				videoDevices={videoDevices}
-				webcamDeviceId={webcamDeviceId}
-				selectedVideoDeviceId={selectedVideoDeviceId}
-				onSelectVideoDevice={(deviceId) => {
-					setWebcamEnabled(true);
-					setSelectedVideoDeviceId(deviceId);
-					setWebcamDeviceId(deviceId);
-				}}
-				trigger={
-					<Button
-						variant="ghost"
-						size="icon"
-						iconSize="lg"
-						title={
-							webcamEnabled
-								? t("recording.disableWebcam")
-								: t("recording.enableWebcam")
-						}
-						className={webcamEnabled ? "text-accent" : ""}
-					>
-						{webcamEnabled ? (
-							<VideoCameraIcon
-								weight={webcamEnabled ? "fill" : "regular"}
+			<Suspense fallback={null}>
+				<WebcamPopover
+					disabled={recording}
+					webcamEnabled={webcamEnabled}
+					onDisableWebcam={() => setWebcamEnabled(false)}
+					canToggleFloatingPreview={canToggleFloatingWebcamPreview(
+						hudOverlayMousePassthroughSupported,
+					)}
+					showFloatingWebcamPreview={showFloatingWebcamPreview}
+					onToggleFloatingPreview={() => setShowFloatingWebcamPreview((current) => !current)}
+					showWebcamControls={showWebcamControls}
+					setWebcamPreviewNode={setWebcamPreviewNode}
+					videoDevices={videoDevices}
+					webcamDeviceId={webcamDeviceId}
+					selectedVideoDeviceId={selectedVideoDeviceId}
+					onSelectVideoDevice={(deviceId) => {
+						setWebcamEnabled(true);
+						setSelectedVideoDeviceId(deviceId);
+						setWebcamDeviceId(deviceId);
+					}}
+					trigger={
+						<Button
+							variant="ghost"
+							size="icon"
+							iconSize="lg"
+							title={
+								webcamEnabled
+									? t("recording.disableWebcam")
+									: t("recording.enableWebcam")
+							}
+							className={webcamEnabled ? "text-accent" : ""}
+						>
+							{webcamEnabled ? (
+								<VideoCameraIcon
+									weight={webcamEnabled ? "fill" : "regular"}
+									className="size-5"
+									size={18}
+								/>
+							) : (
+								<VideoCameraSlashIcon className="size-5" />
+							)}
+					</Button>
+				}
+			/>
+			</Suspense>
+
+			<Suspense fallback={null}>
+				<CountdownPopover
+					countdownDelay={countdownDelay}
+					onSelectDelay={setCountdownDelay}
+					trigger={
+						<Button
+							variant="ghost"
+							size="icon"
+							iconSize="lg"
+							title={t("recording.countdownDelay")}
+							className={countdownDelay > 0 ? "text-accent" : ""}
+						>
+							<TimerIcon
+								weight={openId === "countdown" ? "fill" : "regular"}
 								className="size-5"
-								size={18}
 							/>
-						) : (
-							<VideoCameraSlashIcon className="size-5" />
-						)}
-					</Button>
-				}
-			/>
-
-			<CountdownPopover
-				countdownDelay={countdownDelay}
-				onSelectDelay={setCountdownDelay}
-				trigger={
-					<Button
-						variant="ghost"
-						size="icon"
-						iconSize="lg"
-						title={t("recording.countdownDelay")}
-						className={countdownDelay > 0 ? "text-accent" : ""}
-					>
-						<TimerIcon
-							weight={openId === "countdown" ? "fill" : "regular"}
-							className="size-5"
-						/>
-					</Button>
-				}
-			/>
+						</Button>
+					}
+				/>
+			</Suspense>
 
 			<Button
 				type="button"

@@ -59,20 +59,20 @@ describe("local media path policy", () => {
 		const source = path.join(tempRoot, "video.mp4");
 		await fs.writeFile(source, "video");
 		const projectsDir = await manager.getProjectsDir();
-		const projectPath = path.join(projectsDir, "preview.recordly");
+		const projectPath = path.join(projectsDir, "preview.recordwe");
 		await fs.writeFile(
 			projectPath,
 			JSON.stringify({ version: 1, videoPath: source, editor: {} }),
 		);
-		state.setCurrentProjectPath("active.recordly");
+		state.setCurrentProjectPath("active.recordwe");
 		state.setCurrentVideoPath("active.mp4");
 		const result = await manager.readProjectPreview(projectPath);
 		expect(result.videoUrl).toContain(encodeURIComponent(source));
 		expect(result.webcamUrl).toBeNull();
-		expect(state.currentProjectPath).toBe("active.recordly");
+		expect(state.currentProjectPath).toBe("active.recordwe");
 		expect(state.currentVideoPath).toBe("active.mp4");
 		await expect(
-			manager.readProjectPreview(path.join(tempRoot, "unknown.recordly")),
+			manager.readProjectPreview(path.join(tempRoot, "unknown.recordwe")),
 		).rejects.toThrow("not in the library");
 	});
 
@@ -173,7 +173,7 @@ describe("local media path policy", () => {
 	});
 
 	it("preserves an existing project thumbnail when no replacement is provided", async () => {
-		const projectPath = path.join(tempRoot, "Projects", "demo.recordly");
+		const projectPath = path.join(tempRoot, "Projects", "demo.recordwe");
 		const thumbnailDataUrl = `data:image/png;base64,${Buffer.from("png-thumbnail").toString("base64")}`;
 		await fs.mkdir(path.dirname(projectPath), { recursive: true });
 
@@ -188,7 +188,7 @@ describe("local media path policy", () => {
 
 	it("loads project files that start with a UTF-8 byte order mark", async () => {
 		const videoPath = path.join(tempPath, "recording.mp4");
-		const projectPath = path.join(tempPath, "recording.recordly");
+		const projectPath = path.join(tempPath, "recording.recordwe");
 		await fs.writeFile(videoPath, "test-video");
 		await fs.writeFile(
 			projectPath,
@@ -211,7 +211,7 @@ describe("local media path policy", () => {
 	it("rejects invalid project payloads before approving media paths", async () => {
 		const downloadsPath = path.join(tempRoot, "Downloads");
 		const videoPath = path.join(downloadsPath, "recording.mp4");
-		const projectPath = path.join(tempPath, "invalid.recordly");
+		const projectPath = path.join(tempPath, "invalid.recordwe");
 		await fs.mkdir(downloadsPath, { recursive: true });
 		await fs.writeFile(videoPath, "test-video");
 		await fs.writeFile(
@@ -235,7 +235,7 @@ describe("local media path policy", () => {
 		const downloadsPath = path.join(tempRoot, "Downloads");
 		const videoPath = path.join(tempPath, "recording.mp4");
 		const audioPath = path.join(downloadsPath, "music.ogg");
-		const projectPath = path.join(tempPath, "recording.recordly");
+		const projectPath = path.join(tempPath, "recording.recordwe");
 		await fs.mkdir(downloadsPath, { recursive: true });
 		await fs.writeFile(videoPath, "test-video");
 		await fs.writeFile(audioPath, "test-audio");

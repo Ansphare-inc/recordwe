@@ -13,7 +13,7 @@ export const COUNTDOWN_SETTINGS_FILE = path.join(USER_DATA_PATH, "countdown-sett
 export const APP_SETTINGS_FILE = path.join(USER_DATA_PATH, "app-settings.json");
 export const AUTO_RECORDING_PREFIX = "recording-";
 export const ALLOW_RECORDLY_WINDOW_CAPTURE = Boolean(process.env["VITE_DEV_SERVER_URL"]);
-export const RECORDING_SESSION_MANIFEST_SUFFIX = ".recordly-session.json";
+export const RECORDING_SESSION_MANIFEST_SUFFIX = ".recordwe-session.json";
 export const WHISPER_MODEL_DOWNLOAD_URL =
 	"https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin";
 export const WHISPER_MODEL_DIR = path.join(USER_DATA_PATH, "whisper");

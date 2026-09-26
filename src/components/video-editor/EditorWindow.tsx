@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { ShortcutsProvider } from "../../contexts/ShortcutsContext";
 import { loadAllCustomFonts } from "../../lib/customFonts";
 import { AnnouncementDialog } from "../announcements/AnnouncementDialog";
 import { LiveAnnouncementNotifications } from "../announcements/LiveAnnouncementNotifications";
-import { ShortcutsConfigDialog } from "./ShortcutsConfigDialog";
 import VideoEditor from "./VideoEditor";
+
+const ShortcutsConfigDialog = lazy(() => import("./ShortcutsConfigDialog"));
 
 export default function EditorWindow() {
 	useEffect(() => {
@@ -17,7 +18,9 @@ export default function EditorWindow() {
 		<>
 			<ShortcutsProvider>
 				<VideoEditor />
-				<ShortcutsConfigDialog />
+				<Suspense fallback={null}>
+					<ShortcutsConfigDialog />
+				</Suspense>
 			</ShortcutsProvider>
 			<AnnouncementDialog audience="editor" />
 			<LiveAnnouncementNotifications audience="editor" />
