@@ -21,7 +21,7 @@ import {
 	signInWithEmail,
 	signInWithSocial,
 	signOutRecordWe,
-} from "@/lib/auth/recordlyAuth";
+} from "@/lib/auth/recordWeAuth";
 
 const MotionDialog = motion.create(Modal.Dialog);
 

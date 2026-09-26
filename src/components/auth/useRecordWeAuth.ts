@@ -3,26 +3,26 @@ import type { User } from "@supabase/supabase-js";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
 	completeAuthCallback,
-	recordlyAuth,
-	recordlyAuthConfigured,
-} from "@/lib/auth/recordlyAuth";
+	recordWeAuth,
+	recordWeAuthConfigured,
+} from "@/lib/auth/recordWeAuth";
 
 export function useRecordWeAuth() {
 	const demo = useSyncExternalStore(subscribeDemoSession, hasDemoSession, () => false);
 	const [user, setUser] = useState<User | null>(null);
 	const [accessToken, setAccessToken] = useState<string>();
-	const [loading, setLoading] = useState(recordlyAuthConfigured);
+	const [loading, setLoading] = useState(recordWeAuthConfigured);
 	const [callbackError, setCallbackError] = useState<string>();
 	const callbackUrl = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
-		if (!recordlyAuth) {
+		if (!recordWeAuth) {
 			setLoading(false);
 			return;
 		}
 
 		let mounted = true;
-		void recordlyAuth.auth
+		void recordWeAuth.auth
 			.getSession()
 			.then(({ data }) => {
 				if (mounted) {
@@ -37,7 +37,7 @@ export function useRecordWeAuth() {
 					setLoading(false);
 				}
 			});
-		const { data: listener } = recordlyAuth.auth.onAuthStateChange((_event, session) => {
+		const { data: listener } = recordWeAuth.auth.onAuthStateChange((_event, session) => {
 			if (mounted) {
 				setUser(session?.user ?? null);
 				setAccessToken(session?.access_token);
@@ -73,7 +73,7 @@ export function useRecordWeAuth() {
 		user: demo ? demoUser : user,
 		accessToken: demo ? undefined : accessToken,
 		loading,
-		configured: recordlyAuthConfigured,
+		configured: recordWeAuthConfigured,
 		callbackError,
 	};
 }

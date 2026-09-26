@@ -5,11 +5,11 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
 const callbackUrl = import.meta.env.DEV
 	? "http://127.0.0.1:43821/auth/callback"
-	: "recordly://auth/callback";
+	: "recordwe://auth/callback";
 
-export const recordlyAuthConfigured = Boolean(supabaseUrl && supabasePublishableKey);
+export const recordWeAuthConfigured = Boolean(supabaseUrl && supabasePublishableKey);
 
-export const recordlyAuth = recordlyAuthConfigured
+export const recordWeAuth = recordWeAuthConfigured
 	? createClient(supabaseUrl!, supabasePublishableKey!, {
 			auth: {
 				flowType: "pkce",
@@ -21,12 +21,12 @@ export const recordlyAuth = recordlyAuthConfigured
 	: null;
 
 function requireAuth() {
-	if (!recordlyAuth) {
+	if (!recordWeAuth) {
 		throw new Error(
 			"RecordWe Auth is not configured. Add the Supabase URL and publishable key.",
 		);
 	}
-	return recordlyAuth;
+	return recordWeAuth;
 }
 
 export async function signInWithEmail(email: string, password: string): Promise<User> {
